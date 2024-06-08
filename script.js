@@ -27,7 +27,7 @@ const data = [{
     text: "Follow Channel",
     ticketLength: 100,
     linkText : 'Follow',
-    onClickF : function() {
+    onClickF : function(node) {
         let countDo = localStorage.getItem('teleToChannel');
         if(!countDo){
             localStorage.setItem('teleToChannel', '1');
@@ -36,6 +36,12 @@ const data = [{
         if(+countDo >= 1){
             coin += 100;
             updateCoin()
+            if(node){
+                node.onclick = () => false;
+                node.classList.add('hide')
+                document.getElementById(`complated${node.dataset.len}`).classList.remove('hide');
+            }
+            data[0].complated = true;
         }
         localStorage.setItem('teleToChannel', String(++countDo));
     },
@@ -46,10 +52,9 @@ function updateCoin(){
     localStorage.setItem('coinTeleBot', coin);
 }
 updateCoin();
-
+let node;
 
 function addCard({complated, text,ticketLength, linkText, onClickF, link = '#'}){
-    console.log(complated)
     const homeMenu = document.getElementById('menuHome');
     const id = `do${lenMenuHome}`;
     homeMenu.innerHTML += `<div class="card flex">
@@ -62,12 +67,13 @@ function addCard({complated, text,ticketLength, linkText, onClickF, link = '#'})
                             </div>
                         </div>
                         <div class="textCenter">
-                            <a href="${link}" class="button ${complated ? 'hide' : ''}" id="${id}">${linkText}</a>
+                            <a href="${link}" target="_blank" class="button ${complated ? 'hide' : ''}" id="${id}" data-len='${lenMenuHome}'>${linkText}</a>
                             <p class="button ${!complated ? 'hide' : ''} grey" id="complated${lenMenuHome}">Completed</p>
                         </div>
                     </div>
                 </div>`;
-    document.getElementById(id).onclick = onClickF;
+    node = document.getElementById(id);
+    node.onclick = () => onClickF(node);
 }
 for(let i = 0; i < data.length; i++){
     const elm = data[i];
